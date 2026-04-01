@@ -11,8 +11,12 @@ router.get('/', async (req, res) => {
     const {search, department, page = 1, limit = 10} = req.query;
 
     // Pagination
-    const currentPage = Math.max(1, +page)
-    const limitPerPage = Math.max(1, +limit);
+    // const currentPage = Math.max(1, +page)
+    // const limitPerPage = Math.max(1, +limit);
+
+    const currentPage = Math.max(1, parseInt(String(page), 10) || 1);
+    const limitPerPage = Math.min(Math.max(1, parseInt(String(limit), 10) || 10), 100); // Max 100 records per page
+
     const offset = (currentPage - 1) * limitPerPage;
 
     // Query
@@ -26,8 +30,14 @@ router.get('/', async (req, res) => {
       )
     }
 
+    // if (department) {
+    //   filterConditions.push(ilike(departments.name, `%${department}%`))
+    // }
+
+    // If department filter exists, match department name
     if (department) {
-      filterConditions.push(ilike(departments.name, `%${department}%`))
+      const deptPattern = `%${String(department).replace(/[%_]/g, '\\$&')}%`;
+      filterConditions.push(ilike(departments.name, deptPattern));
     }
 
     const whereClause = filterConditions.length > 0 ? and(...filterConditions) : undefined;
@@ -38,7 +48,7 @@ router.get('/', async (req, res) => {
 
     const subjectsList = await db.select({
       ...getTableColumns(subjects),
-      department:{...getTableColumns(departments)}
+      department: {...getTableColumns(departments)}
     })
       .from(subjects)
       .leftJoin(departments, eq(subjects.departmentId, departments.id))
