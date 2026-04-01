@@ -1,15 +1,23 @@
 import express from "express";
-import type { Request, Response } from "express";
+import type {Request, Response} from "express";
+import subjectsRouter from './routes/subjects'
+import cors from "cors";
 
 // Create Express app
 const app = express();
 
+app.use(cors({
+  origin: process.env.FRONTEND_URL,
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE"],
+  credentials: true
+}))
 // Middleware to parse JSON
 app.use(express.json());
 
+app.use("/api/subjects", subjectsRouter);
 // Root route
 app.get("/", (req: Request, res: Response) => {
-  res.json({ message: "Hello from Classroom backend" });
+  res.json({message: "Hello from Classroom backend"});
 });
 
 // Port configuration (default 8000)
