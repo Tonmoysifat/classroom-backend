@@ -15,6 +15,13 @@
       "when": 1774679445296,
       "tag": "0001_colossal_reaper",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1775543336565,
+      "tag": "0002_married_trish_tilby",
+      "breakpoints": true
     }
   ]
 }
